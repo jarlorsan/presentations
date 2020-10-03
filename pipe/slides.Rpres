@@ -1,62 +1,278 @@
 The Power of the Pipe (%>%)
 ========================================================
 author: Jarren Santos
-date: Last updated September 26, 2020
+date: Last updated October 3, 2020
 autosize: true
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+```
+
+
+Outline
+========================================================
+1. Background
+2. Pipes (`%>%`)  
+  a. `%>%` as a concept  
+  b. Applying `%>%` to data   
+3. With great `%>%` comes great `%>%`  
+  a. Pros and cons
 
 
 
 Assumptions
 ========================================================
-I assume you swim in the following pools of knowledge prior to presenting this information.
+I assume you swim in the following pools of knowledge prior to digesting this information.
 
-1. bleep
-2. bloop
-3. blap
+1. You have a basic understanding of the R programming language.  
+  a. Scripts, object assignment, classes
+2. You have a basic understanding of data manipulation and exploratory data analysis.  
+  a. Cleaning, plotting, identifying patterns
+3. You are interested in exploring more about R and how it is used collaboratively.  
+  a. {tidyverse}, {dplyr}, {ggplot2}
 
 
 
 Background
 ========================================================
-Background answers these questions:
+What is a pipe (`%>%`)?
 
-1. What is a pipe?  
-  a. Where does it come from?  
-  b. How is it used?
-2. What power does it possess?  
-  a. Why should I be using this and not base R?
+* Powerful R operator from `{magrittr}`
+* Allows for an object to move into another sequence
+* Popular dependency for other R packages (`{tidyverse}`)
+
+```
+Result <- Object %>% 
+  Function1(Object) %>% 
+  Function2(Function1(Object)) %>% 
+  Function3(Function2(Function1(Object)))
+```
 
 
 
-Prior to the Pipe
+Background (cont.)
 ========================================================
-Here I show implementations of code not using the pipe (probably some tidyverse data source).
+As stated by Stefan Milton Bache (created `{magrittr}`), the `%>%` aims to:
 
-1. Base R implementation
-2. Arbitrary naming of functions/objects implementation
-3. Repetitive overriding of functions/objects implementation
+1. Decrease development time
+2. Improve readability and maintainability of code
+
+In my opinion, incorporating the `%>%` into your code also allows you to:
+
+1. Perform multiple steps with one call
+2. Organize your code to improve data analysis workflow
+3. Strike balance between readability & efficiency
+
+
+  
+Pipe Conceptual Model
+========================================================
+```
+jarren
+```
+
+![](images/jarren01.jpg)
 
 
 
 Pipe Conceptual Model
 ========================================================
-Prior to showing the pipe in action, I present the pipe in proof of concept.
+```
+jarren %>%
+  add_coffee()
+```
 
-1. Pictures of me (or something else) progressively bringing along items.
-2. Grocery store reference  
-  a. Pick up grocery store items one by one, sacrificing a trip each time  
-  b. Pick up all the grocery store items all in one trip
-3. Super Mario (?!?!?)
+![](images/jarren01.jpg) `%>%` ![](images/jarren02.jpg)
+
+
+
+Pipe Conceptual Model
+========================================================
+```
+jarren %>%
+  add_coffee() %>%
+  wear_headphones()
+```
+
+![](images/jarren01.jpg) `%>%` ![](images/jarren02.jpg) `%>%` ![](images/jarren03.jpg) 
+
+
+
+Pipe Conceptual Model
+========================================================
+```
+jarren %>%
+  add_coffee() %>%
+  wear_headphones() %>%
+  get_to_work()
+```
+
+![](images/jarren01.jpg) `%>%` 
+  ![](images/jarren02.jpg) `%>%` 
+  ![](images/jarren03.jpg) `%>%` 
+  ![](images/jarren04.jpg)
+
+
+
+Prior to the Pipe
+========================================================
+
+Dataset: [U.S. Government Spending on Kids](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-15/readme.md)
+
+> This dataset provides a comprehensive accounting of public spending on children from 1997 through 2016. It draws on the US Census Bureau’s Annual Survey of State and Local Government Finances, as well as several federal and other noncensus sources, to capture state-by-state spending on education, income security, health, and other areas. 
+
+Source: [Urban Institute](https://datacatalog.urban.org/dataset/state-state-spending-kids-dataset) via [Joshua Rosenberg](https://twitter.com/jrosenberg6432)'s [`{tidykids}`](https://jrosen48.github.io/tidykids/index.html)
+
+
+
+Prior to the Pipe (cont.)
+========================================================
+
+NOTE full variable codebook at: [`{tidykids}` pkgdown site](https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html).
+
+|variable         |class     |description |
+|:----------------|:---------|:-----------|
+|state            |character | United States state (and the District of Columbia) |
+|variable         |character | Type of spending|
+|year             |double    | Year |
+|raw              |double    |  The value of the variable; a numeric value|
+|inf_adj          |double    | The value of the variable, adjusted for inflation, a numeric value |
+|inf_adj_perchild |double    | The value of the variable adjusted for inflation, per child; a numeric value|
+
+
+
+Prior to the Pipe (cont.)
+========================================================
+Goals to accomplish for data analysis exercise:
+
+1. Import data.
+2. Filter data to only show Iowa's spending on elementary & secondary education over time.
+3. Summarize data into a clean data visualization.
+4. Prepare code for distribution to people of different backgrounds, expertise, etc.
+
+
+
+Prior to the Pipe (cont.)
+========================================================
+`{base}` Implementation, Intermediate Steps
+
+```{r, eval = FALSE}
+kids_a <- subset(kids, state == "Iowa")
+kids_b <- kids_a[kids_a$variable == "PK12ed", ]
+kids_b$inf_adj_perchild_actual <- kids_b$inf_adj_perchild * 1000
+kids_c <- kids_b[, c("year", "inf_adj_perchild_actual")]
+plot(kids_c$year, kids_c$inf_adj_perchild_actual,
+     main = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+     sub = "Public prekindergarten spending transformed to be in 2016 dollars",
+     xlab = "Year",
+     ylab = "Amount ($)")
+```
+
+Prior to the Pipe (cont.)
+========================================================
+```{r, echo = FALSE, fig.align = "center"}
+kids <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv")
+kids_a <- subset(kids, state == "Iowa")
+kids_b <- kids_a[kids_a$variable == "PK12ed", ]
+kids_b$inf_adj_perchild_actual <- kids_b$inf_adj_perchild * 1000
+kids_c <- kids_b[, c("year", "inf_adj_perchild_actual")]
+plot(kids_c$year, kids_c$inf_adj_perchild_actual,
+     main = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+     sub = "Public prekindergarten spending transformed to be in 2016 dollars",
+     xlab = "Year",
+     ylab = "Amount ($)")
+```
+
+
+Prior to the Pipe (cont.)
+========================================================
+`{tidyverse}` Implementation, Overriding Objects
+
+```{r, eval = FALSE}
+kids <- filter(.data = kids, state == "Iowa", variable == "PK12ed")
+kids <- mutate(.data = kids, inf_adj_perchild_actual = inf_adj_perchild * 1000)
+kids <- select(.data = kids, year, inf_adj_perchild_actual)
+```
+
+
+
+Prior to the Pipe (cont.)
+========================================================
+`{tidyverse}` Implementation, Overriding Objects
+
+```{r, eval = FALSE}
+ggplot(data = kids, aes(x = year, y = inf_adj_perchild_actual)) +
+  theme_bw() +
+  geom_point() +
+  labs(title = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+       subtitle = "Public prekindergarten spending transformed to be in 2016 dollars",
+       caption = "Data sourced from Urban Institute, courtesy of Joshua Rosenberg \n https://jrosen48.github.io/tidykids/index.html") +
+  xlab("Year") + 
+  ylab("Amount ($)")
+```
+
+
+
+Prior to the Pipe (cont.)
+========================================================
+```{r, echo = FALSE, fig.align = "center"}
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+kids <- filter(.data = kids, state == "Iowa", variable == "PK12ed")
+kids <- mutate(.data = kids, inf_adj_perchild_actual = inf_adj_perchild * 1000)
+kids <- select(.data = kids, year, inf_adj_perchild_actual)
+ggplot(data = kids, aes(x = year, y = inf_adj_perchild_actual)) +
+  theme_bw() +
+  geom_point() +
+  labs(title = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+       subtitle = "Public prekindergarten spending transformed to be in 2016 dollars",
+       caption = "Data sourced from Urban Institute, courtesy of Joshua Rosenberg \n https://jrosen48.github.io/tidykids/index.html") +
+  xlab("Year") + 
+  ylab("Amount ($)")
+```
+
 
 
 
 Present to the Pipe
 ========================================================
-Here I show implementations of code using the pipe (probably some tidyverse data source).
+`{tidyverse}` Implementation, `%>%` Power
 
-1. Look at the readability!
-2. Look at the efficiency (i.e., no arbitrary naming, no repetitive override)!
-3. Let's make sure to do another example after this!
+```{r, eval = FALSE}
+kids %>%
+  filter(state == "Iowa", variable == "PK12ed") %>%
+  mutate(inf_adj_perchild_actual = inf_adj_perchild * 1000) %>%
+  select(year, inf_adj_perchild_actual) %>%
+  ggplot(aes(x = year, y = inf_adj_perchild_actual)) +
+  theme_bw() +
+  geom_point() +
+  labs(title = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+       subtitle = "Public prekindergarten spending transformed to be in 2016 dollars",
+       caption = "Data sourced from Urban Institute, courtesy of Joshua Rosenberg \n https://jrosen48.github.io/tidykids/index.html") +
+  xlab("Year") + 
+  ylab("Amount ($)")
+```
+
+
+
+Present to the Pipe (cont.)
+========================================================
+```{r, echo = FALSE, fig.align = "center"}
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+kids %>%
+  # Data Cleaning
+  filter(state == "Iowa", variable == "PK12ed") %>%
+  mutate(inf_adj_perchild_actual = inf_adj_perchild * 1000) %>%
+  select(year, inf_adj_perchild_actual) %>%
+  # Data Visualization
+  ggplot(aes(x = year, y = inf_adj_perchild_actual)) +
+  theme_bw() +
+  geom_point() +
+  labs(title = "Iowa's Spending on Elementary & Secondary Education 1997-2016",
+       subtitle = "Public prekindergarten spending transformed to be in 2016 dollars",
+       caption = "Data sourced from Urban Institute, courtesy of Joshua Rosenberg \n https://jrosen48.github.io/tidykids/index.html") +
+  xlab("Year") + 
+  ylab("Amount ($)")
+```
 
 
 
@@ -77,33 +293,10 @@ Consider when it is best to use the pipe (along with its pipe alternatives!).
 
 Why should I use the Pipe again?
 ========================================================
-Here I show implementations of code using the pipe (probably some tidyverse data source).
 
-1. Look at the readability!
-2. Look at the efficiency (i.e., no arbitrary naming, no repetitive override)!
-
-
-
-Slide With Code
-========================================================
-
-```{r}
-summary(cars)
-```
-
-Slide With Plot
-========================================================
-
-```{r}
-plot(cars)
-```
-
-Slide With Plot
-========================================================
-
-```{r, echo=FALSE}
-plot(cars)
-```
+1. Accomplish multiple steps in just one call of code.
+2. Enhance readability of code.
+3. Improve efficiency in developing and understanding code.
 
 
 
