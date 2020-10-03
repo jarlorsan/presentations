@@ -39,11 +39,15 @@ What is a pipe (`%>%`)?
 * Allows for an object to move into another sequence
 * Popular dependency for other R packages (`{tidyverse}`)
 
-```
+
+```r
 Result <- Object %>% 
-  Function1(Object) %>% 
-  Function2(Function1(Object)) %>% 
-  Function3(Function2(Function1(Object)))
+  # Apply Function1 to Object
+  Function1() %>%
+  # Apply Function2 to Function1(Object)
+  Function2() %>%
+  # Apply Function3 to Function2(Function1(Object))
+  Function3()
 ```
 
 
@@ -169,7 +173,7 @@ plot(kids_c$year, kids_c$inf_adj_perchild_actual,
 
 Prior to the Pipe (cont.)
 ========================================================
-<img src="slides-figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+<img src="slides-figure/unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" style="display: block; margin: auto;" />
 
 
 Prior to the Pipe (cont.)
@@ -205,7 +209,7 @@ ggplot(data = kids, aes(x = year, y = inf_adj_perchild_actual)) +
 
 Prior to the Pipe (cont.)
 ========================================================
-<img src="slides-figure/unnamed-chunk-6-1.png" title="plot of chunk unnamed-chunk-6" alt="plot of chunk unnamed-chunk-6" style="display: block; margin: auto;" />
+<img src="slides-figure/unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
 
 
 
@@ -234,7 +238,7 @@ kids %>%
 
 Present to the Pipe (cont.)
 ========================================================
-<img src="slides-figure/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
+<img src="slides-figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
 
 
 
